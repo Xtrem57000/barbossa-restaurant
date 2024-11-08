@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barbossa - Gestion Restaurant</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-color: #2c1810;
+            --secondary-color: #d4a064;
+            --accent-color: #8b4513;
+            --background-color: #f5f3f0;
+        }
+
+        body {
+            background: var(--background-color);
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+            text-align: center;
+            padding: 1rem;
+            font-family: 'Georgia', serif;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        nav {
+            background: var(--primary-color);
+            padding: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+        }
+
+        nav a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid rgba(212, 160, 100, 0.2);
+        }
+
+        .card h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 0.5rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+        }
+
+        tr:hover {
+            background-color: rgba(212, 160, 100, 0.1);
+        }
+
+        button {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: var(--primary-color);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--secondary-color);
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .stats-container {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+            border: 1px solid var(--secondary-color);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: bold;
+        }
+
+        .status-en-preparation {
+            background-color: #ffd700;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">BARBOSSA</div>
+    <nav>
+        <ul>
+            <li><a href="#dashboard">Tableau de bord</a></li>
+            <li><a href="#orders">Commandes</a></li>
+            <li><a href="#menu">Menu</a></li>
+            <li><a href="#inventory">Stock</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <section id="dashboard" class="dashboard">
+            <div class="card">
+                <h3>Ventes du jour</h3>
+                <canvas id="salesChart"></canvas>
+            </div>
+            <div class="card">
+                <h3>Statistiques</h3>
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-number">42</div>
+                        <div>Commandes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">1250€</div>
+                        <div>Revenus</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">4.8</div>
+                        <div>Note moyenne</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="orders" class="card">
+            <h3>Commandes en cours</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>N° Commande</th>
+                        <th>Client</th>
+                        <th>Articles</th>
+                        <th>Total</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>#001</td>
+                        <td>Jean Dupont</td>
+                        <td>2x Tarte aux pommes, 1x Café</td>
+                        <td>15.50€</td>
+                        <td><span class="status-badge status-en-preparation">En préparation</span></td>
+                        <td><button>Gérer</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="menu" class="card">
+            <h3>Gestion du Menu</h3>
+            <form>
+                <div class="form-group">
+                    <label>Nom du plat</label>
+                    <input type="text" placeholder="Entrez le nom du plat">
+                </div>
+                <div class="form-group">
+                    <label>Catégorie</label>
+                    <select>
+                        <option>Plat principal</option>
+                        <option>Dessert</option>
+                        <option>Boisson</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Prix</label>
+                    <input type="number" placeholder="0.00">
+                </div>
+                <button type="submit">Ajouter au menu</button>
+            </form>
+        </section>
+
+        <section id="inventory" class="card">
+            <h3>Gestion du Stock</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ingrédient</th>
+                        <th>Quantité</th>
+                        <th>Unité</th>
+                        <th>Seuil d'alerte</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Farine</td>
+                        <td>5</td>
+                        <td>kg</td>
+                        <td>2 kg</td>
+                        <td><button>Modifier</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </div>
+
+    <script>
+        // Configuration du graphique de ventes
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['8h', '10h', '12h', '14h', '16h', '18h', '20h'],
+                datasets: [{
+                    label: 'Ventes (€)',
+                    data: [150, 300, 450, 300, 200, 350, 500],
+                    borderColor: '#8b4513',
+                    backgroundColor: 'rgba(139, 69, 19, 0.1)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
