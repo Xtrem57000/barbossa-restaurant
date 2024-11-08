@@ -74,15 +74,21 @@
             background: #ffd700;
             color: black;
         }
+        .error {
+            color: red;
+            margin-top: 10px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
     <!-- Login Form -->
     <div id="loginForm" class="card login-card">
         <h2>Connexion Barbossa</h2>
-        <input type="email" id="email" placeholder="Email" value="test@test.com">
-        <input type="password" id="password" placeholder="Mot de passe" value="test123">
+        <input type="email" id="email" placeholder="Email" value="admin@barbossa.com">
+        <input type="password" id="password" placeholder="Mot de passe" value="123456">
         <button onclick="login()">Se connecter</button>
+        <div id="error" class="error"></div>
     </div>
 
     <!-- Main Content -->
@@ -119,14 +125,15 @@
     </div>
 
     <script>
-        // REMPLACEZ CECI PAR VOTRE CONFIG FIREBASE
+        // Votre configuration Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBVrw0lr1-AyZYycR5FwJQcBtrxh0MWMSg",
-  authDomain: "barbossa-restaurant.firebaseapp.com",
-  projectId: "barbossa-restaurant",
-  storageBucket: "barbossa-restaurant.firebasestorage.app",
-  messagingSenderId: "967169557496",
-  appId: "1:967169557496:web:d8091d71719645a5254c0d","
+            authDomain: "barbossa-restaurant.firebaseapp.com",
+            projectId: "barbossa-restaurant",
+            storageBucket: "barbossa-restaurant.firebasestorage.app",
+            messagingSenderId: "967169557496",
+            appId: "1:967169557496:web:d8091d71719645a5254c0d",
+            measurementId: "G-YL6M3R2TKC"
         };
 
         // Initialize Firebase
@@ -138,17 +145,21 @@
         function login() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error');
 
             auth.signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     console.log("Connexion réussie");
+                    errorDiv.textContent = "Connexion réussie !";
+                    errorDiv.style.color = "green";
                     document.getElementById('loginForm').style.display = 'none';
                     document.getElementById('mainContent').style.display = 'block';
                     loadData();
                 })
                 .catch((error) => {
                     console.error("Erreur de connexion:", error);
-                    alert("Erreur de connexion: " + error.message);
+                    errorDiv.textContent = "Erreur : " + error.message;
+                    errorDiv.style.color = "red";
                 });
         }
 
