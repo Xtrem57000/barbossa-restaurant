@@ -4,326 +4,204 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Barbossa - Gestion Restaurant</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
         }
-
-        :root {
-            --primary-color: #2c1810;
-            --secondary-color: #d4a064;
-            --accent-color: #8b4513;
-            --background-color: #f5f3f0;
-        }
-
         body {
-            background: var(--background-color);
+            background: #f5f5f5;
+            padding: 20px;
         }
-
-        .logo {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: var(--secondary-color);
-            text-align: center;
-            padding: 1rem;
-            font-family: 'Georgia', serif;
-            letter-spacing: 2px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
         }
-
-        nav {
-            background: var(--primary-color);
-            padding: 1rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        }
-
-        nav ul {
-            list-style: none;
-            display: flex;
-            gap: 2rem;
-            justify-content: center;
-        }
-
-        nav a {
-            color: var(--secondary-color);
-            text-decoration: none;
-            font-weight: bold;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-        }
-
-        nav a:hover {
-            background: var(--accent-color);
-            color: white;
-        }
-
-        .dashboard {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
         .card {
             background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            border: 1px solid rgba(212, 160, 100, 0.2);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-
-        .card h3 {
-            margin-bottom: 1rem;
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--secondary-color);
-            padding-bottom: 0.5rem;
+        .login-card {
+            max-width: 400px;
+            margin: 50px auto;
         }
-
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #45a049;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 1rem;
+            margin-top: 10px;
         }
-
         th, td {
-            padding: 0.75rem;
+            padding: 12px;
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
-
-        th {
-            background-color: var(--primary-color);
-            color: var(--secondary-color);
-        }
-
-        tr:hover {
-            background-color: rgba(212, 160, 100, 0.1);
-        }
-
-        button {
-            background: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-
-        button:hover {
-            background: var(--primary-color);
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: var(--primary-color);
-            font-weight: bold;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--secondary-color);
-            border-radius: 4px;
-            font-size: 1rem;
-        }
-
-        .stats-container {
-            display: flex;
-            gap: 1.5rem;
-            flex-wrap: wrap;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 8px;
-            flex: 1;
-            min-width: 200px;
-            text-align: center;
-            border: 1px solid var(--secondary-color);
-            transition: transform 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: var(--accent-color);
-            margin-bottom: 0.5rem;
-        }
-
-        .status-badge {
-            padding: 0.25rem 0.75rem;
+        .status {
+            padding: 5px 10px;
             border-radius: 20px;
-            font-size: 0.875rem;
-            font-weight: bold;
+            font-size: 12px;
         }
-
-        .status-en-preparation {
-            background-color: #ffd700;
-            color: #000;
+        .status-pending {
+            background: #ffd700;
+            color: black;
         }
     </style>
 </head>
 <body>
-    <div class="logo">BARBOSSA</div>
-    <nav>
-        <ul>
-            <li><a href="#dashboard">Tableau de bord</a></li>
-            <li><a href="#orders">Commandes</a></li>
-            <li><a href="#menu">Menu</a></li>
-            <li><a href="#inventory">Stock</a></li>
-        </ul>
-    </nav>
+    <!-- Login Form -->
+    <div id="loginForm" class="card login-card">
+        <h2>Connexion Barbossa</h2>
+        <input type="email" id="email" placeholder="Email" value="test@test.com">
+        <input type="password" id="password" placeholder="Mot de passe" value="test123">
+        <button onclick="login()">Se connecter</button>
+    </div>
 
-    <div class="container">
-        <section id="dashboard" class="dashboard">
-            <div class="card">
-                <h3>Ventes du jour</h3>
-                <canvas id="salesChart"></canvas>
-            </div>
-            <div class="card">
-                <h3>Statistiques</h3>
-                <div class="stats-container">
-                    <div class="stat-card">
-                        <div class="stat-number">42</div>
-                        <div>Commandes</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">1250€</div>
-                        <div>Revenus</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number">4.8</div>
-                        <div>Note moyenne</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="orders" class="card">
-            <h3>Commandes en cours</h3>
-            <table>
+    <!-- Main Content -->
+    <div id="mainContent" class="container" style="display: none;">
+        <div class="card">
+            <h2>Commandes en cours</h2>
+            <table id="ordersTable">
                 <thead>
                     <tr>
-                        <th>N° Commande</th>
                         <th>Client</th>
                         <th>Articles</th>
                         <th>Total</th>
-                        <th>Statut</th>
-                        <th>Actions</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>#001</td>
-                        <td>Jean Dupont</td>
-                        <td>2x Tarte aux pommes, 1x Café</td>
-                        <td>15.50€</td>
-                        <td><span class="status-badge status-en-preparation">En préparation</span></td>
-                        <td><button>Gérer</button></td>
-                    </tr>
-                </tbody>
+                <tbody></tbody>
             </table>
-        </section>
+        </div>
 
-        <section id="menu" class="card">
-            <h3>Gestion du Menu</h3>
-            <form>
-                <div class="form-group">
-                    <label>Nom du plat</label>
-                    <input type="text" placeholder="Entrez le nom du plat">
-                </div>
-                <div class="form-group">
-                    <label>Catégorie</label>
-                    <select>
-                        <option>Plat principal</option>
-                        <option>Dessert</option>
-                        <option>Boisson</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Prix</label>
-                    <input type="number" placeholder="0.00">
-                </div>
-                <button type="submit">Ajouter au menu</button>
-            </form>
-        </section>
-
-        <section id="inventory" class="card">
-            <h3>Gestion du Stock</h3>
-            <table>
+        <div class="card">
+            <h2>Stock</h2>
+            <table id="inventoryTable">
                 <thead>
                     <tr>
-                        <th>Ingrédient</th>
+                        <th>Produit</th>
                         <th>Quantité</th>
                         <th>Unité</th>
-                        <th>Seuil d'alerte</th>
-                        <th>Actions</th>
+                        <th>Alerte</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>Farine</td>
-                        <td>5</td>
-                        <td>kg</td>
-                        <td>2 kg</td>
-                        <td><button>Modifier</button></td>
-                    </tr>
-                </tbody>
+                <tbody></tbody>
             </table>
-        </section>
+        </div>
     </div>
 
     <script>
-        // Configuration du graphique de ventes
-        const ctx = document.getElementById('salesChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['8h', '10h', '12h', '14h', '16h', '18h', '20h'],
-                datasets: [{
-                    label: 'Ventes (€)',
-                    data: [150, 300, 450, 300, 200, 350, 500],
-                    borderColor: '#8b4513',
-                    backgroundColor: 'rgba(139, 69, 19, 0.1)',
-                    tension: 0.1
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
+        // REMPLACEZ CECI PAR VOTRE CONFIG FIREBASE
+        const firebaseConfig = {
+            apiKey: "VOTRE_API_KEY",
+            authDomain: "VOTRE_AUTH_DOMAIN",
+            projectId: "VOTRE_PROJECT_ID",
+            storageBucket: "VOTRE_STORAGE_BUCKET",
+            messagingSenderId: "VOTRE_MESSAGING_SENDER_ID",
+            appId: "VOTRE_APP_ID"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // Login
+        function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    console.log("Connexion réussie");
+                    document.getElementById('loginForm').style.display = 'none';
+                    document.getElementById('mainContent').style.display = 'block';
+                    loadData();
+                })
+                .catch((error) => {
+                    console.error("Erreur de connexion:", error);
+                    alert("Erreur de connexion: " + error.message);
+                });
+        }
+
+        // Load Data
+        function loadData() {
+            // Load Orders
+            db.collection("orders").onSnapshot((snapshot) => {
+                const ordersTable = document.querySelector("#ordersTable tbody");
+                ordersTable.innerHTML = "";
+                
+                snapshot.forEach((doc) => {
+                    const order = doc.data();
+                    const row = `
+                        <tr>
+                            <td>${order.client}</td>
+                            <td>${order.items.join(', ')}</td>
+                            <td>${order.total}€</td>
+                            <td><span class="status status-${order.status}">${order.status}</span></td>
+                        </tr>
+                    `;
+                    ordersTable.innerHTML += row;
+                });
+            });
+
+            // Load Inventory
+            db.collection("inventory").onSnapshot((snapshot) => {
+                const inventoryTable = document.querySelector("#inventoryTable tbody");
+                inventoryTable.innerHTML = "";
+                
+                snapshot.forEach((doc) => {
+                    const item = doc.data();
+                    const row = `
+                        <tr>
+                            <td>${item.name}</td>
+                            <td>${item.quantity}</td>
+                            <td>${item.unit}</td>
+                            <td>${item.alertThreshold} ${item.unit}</td>
+                        </tr>
+                    `;
+                    inventoryTable.innerHTML += row;
+                });
+            });
+        }
+
+        // Check Auth State
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'block';
+                loadData();
+            } else {
+                document.getElementById('loginForm').style.display = 'block';
+                document.getElementById('mainContent').style.display = 'none';
             }
         });
     </script>
